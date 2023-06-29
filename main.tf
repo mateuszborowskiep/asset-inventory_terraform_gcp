@@ -4,20 +4,6 @@ provider "google" {
   region  = "europe-west1"
 }
 
-variable "bucket_name" {
-  description = "Name of the Cloud Storage bucket"
-  default = "cloudquery-bucket"
-}
-
-variable "asset_types" {
-  type        = list(string)
-  description = "List of asset types to export"
-  default     = [
-    "google.compute.Instance",
-    "google.cloud.resourcemanager.Project"
-  ]
-}
-
 # Enable the Asset Inventory API
 resource "google_project_service" "asset_inventory" {
   service = "cloudasset.googleapis.com"
@@ -62,6 +48,14 @@ resource "google_cloud_asset_project_feed" "my_project_feed" {
 resource "google_pubsub_topic" "feed_output" {
   project  = "rosy-crawler-389806"
   name     = "my-project-feed"
+}
+
+data google_cloud_asset_resources_search_all projects {
+  provider = google-beta
+  scope = "organizations/494812795773"
+  asset_types = [
+    "cloudresourcemanager.googleapis.com/Project"
+  ]
 }
 
 
